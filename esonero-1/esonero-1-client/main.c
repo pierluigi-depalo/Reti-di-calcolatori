@@ -24,11 +24,6 @@ int communicate(t_socket server) {
 	    sscanf(buffer, "%c %d", &choice, &len);
 
 	    if(send(get_socket_id(server), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
-
-	    if((bytes_read = recv(get_socket_id(server), buffer, DATA_MAX_LEN, 0)) < 0) return READ_ERROR;
-		buffer[bytes_read] = '\0';
-
-		printf("%s", buffer);
 	} while(choice != 'q');
 
 	return 0;

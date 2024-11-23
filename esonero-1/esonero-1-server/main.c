@@ -51,7 +51,6 @@ void generate_secure(char* pass, int len) {
 }
 
 void generate_password(char* pass, int len, int l, int r) {
-	srand(time(NULL));
 	char* charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?/~`";
 	for(int i=0; i<len; i++) {
 		pass[i] = charset[(rand()%(r-l+1))+l];
@@ -79,12 +78,12 @@ void manage_choice(char* pass, enum CHOICE type, int len) {
 int service(t_socket client) {
 	char buffer[DATA_MAX_LEN+1];
 	char choice, generated_pass[MAX_LENGTH+1];
-
+	char* banner = "Welcome!\nOptions:\n\tn: Numeric password (digits only)\n\ta: Alphabetical password (lowercase letters only)\n\tm: Mixed password (lowercase letters and numbers)\n\ts: Secure password (uppercase letters, lowercase letters, numbers, and symbols)\n\nSend your choice in the format [option] <space> [length] <enter>\n\n>: ";
 	printf("New connection from %s:%d\n", inet_ntoa(get_socket_settings(client).sin_addr), get_socket_settings(client).sin_port);
 
+	strcpy(buffer, banner);
+	if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 	do {
-		strcpy(buffer, "Welcome!\nOptions:\n\tn: Numeric password (digits only)\n\ta: Alphabetical password (lowercase letters only)\n\tm: Mixed password (lowercase letters and numbers)\n\ts: Secure password (uppercase letters, lowercase letters, numbers, and symbols)\n\nSend your choice in the format [option] <space> [length] <enter>\n\n>: ");
-		if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 
 		int len;
 
@@ -102,20 +101,20 @@ int service(t_socket client) {
 		}
 		if(choice != 'q') {
 			if(valid == 0) {
-				strcpy(buffer, "Invalid input format. Use: [option] <space> [length]\n\n");
+				sprintf(buffer, "Invalid input format. Use: [option] <space> [length]\n\n%s", banner);
 				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 			}
 			else if(choice != NUMBERS && choice != LETTERS && choice != NUMBERS_LETTERS && choice != ALL_CHARS) {
-				strcpy(buffer, "Invalid choice, choose one of the option proposed\n\n");
+				sprintf(buffer, "Invalid choice, choose one of the option proposed\n\n%s", banner);
 				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 			}
 			else if(len < MIN_LENGTH || len > MAX_LENGTH) {
-				sprintf(buffer, "Invalid length. Password length must be between %d and %d\n\n", MIN_LENGTH, MAX_LENGTH);
+				sprintf(buffer, "Invalid length. Password length must be between %d and %d\n\n%s", MIN_LENGTH, MAX_LENGTH, banner);
 				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 			}
 			else {
 				manage_choice(generated_pass, choice, len);
-				sprintf(buffer, "Here is the password: %s\n\n", generated_pass);
+				sprintf(buffer, "Here is the password: %s\n\n%s", generated_pass, banner);
 				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
 			}
 		}
