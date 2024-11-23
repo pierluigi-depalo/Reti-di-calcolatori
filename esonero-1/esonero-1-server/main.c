@@ -100,22 +100,24 @@ int service(t_socket client) {
 				}
 		    }
 		}
-		if(valid == 0) {
-			strcpy(buffer, "Invalid input format. Use: [option] <space> [length]\n\n");
-			if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
-		}
-		else if(choice != NUMBERS && choice != LETTERS && choice != NUMBERS_LETTERS && choice != ALL_CHARS) {
-			strcpy(buffer, "Invalid choice, choose one of the option proposed\n\n");
-			if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
-		}
-		else if(len < MIN_LENGTH || len > MAX_LENGTH) {
-			sprintf(buffer, "Invalid length. Password length must be between %d and %d\n\n", MIN_LENGTH, MAX_LENGTH);
-			if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
-		}
-		else {
-			manage_choice(generated_pass, choice, len);
-			sprintf(buffer, "Here is the password: %s\n\n", generated_pass);
-			if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
+		if(choice != 'q') {
+			if(valid == 0) {
+				strcpy(buffer, "Invalid input format. Use: [option] <space> [length]\n\n");
+				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
+			}
+			else if(choice != NUMBERS && choice != LETTERS && choice != NUMBERS_LETTERS && choice != ALL_CHARS) {
+				strcpy(buffer, "Invalid choice, choose one of the option proposed\n\n");
+				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
+			}
+			else if(len < MIN_LENGTH || len > MAX_LENGTH) {
+				sprintf(buffer, "Invalid length. Password length must be between %d and %d\n\n", MIN_LENGTH, MAX_LENGTH);
+				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
+			}
+			else {
+				manage_choice(generated_pass, choice, len);
+				sprintf(buffer, "Here is the password: %s\n\n", generated_pass);
+				if(send(get_socket_id(client), buffer, strlen(buffer), 0) != strlen(buffer)) return SEND_ERROR;
+			}
 		}
 	} while (choice != 'q');
 	return 0;
