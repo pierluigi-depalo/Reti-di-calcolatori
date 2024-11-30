@@ -21,8 +21,6 @@
 
 #endif
 
-
-
 enum SOCKET_TYPE { TCP = SOCK_STREAM, UDP = SOCK_DGRAM};
 
 typedef struct s_socket* t_socket;
