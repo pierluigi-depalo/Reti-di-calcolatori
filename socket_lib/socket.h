@@ -40,15 +40,21 @@ enum SOCKET_MODE {
     CLIENT
 };
 
+t_socket new_t_socket_struct();
 t_socket get_new_socket(enum SOCKET_TYPE type);
 int socket_dll_load();
 
 t_socket server_socket_init(enum SOCKET_TYPE type, char* address, int port);
+t_socket client_socket_init_domain(enum SOCKET_TYPE type, char* domain, int port);
 t_socket client_socket_init(enum SOCKET_TYPE type, char* address, int port);
 t_socket socket_init(enum SOCKET_TYPE type, char* address, int port, enum SOCKET_MODE mode);
 
 int socket_listen(t_socket socket);
 int socket_serve(t_socket socket, int (*funct)(t_socket));
+
+int udp_send(t_socket sock, char* buffer, int len, t_socket toSocket);
+int udp_recv(t_socket sock, char* buffer, int maxlen, t_socket senderSocket);
+
 void socket_close(t_socket* socket);
 void socket_clear();
 struct sockaddr_in get_socket_settings(t_socket sock);

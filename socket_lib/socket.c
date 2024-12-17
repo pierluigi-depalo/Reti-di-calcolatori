@@ -48,8 +48,13 @@ void set_socket_id(t_socket sock, int id) {
 
 /* PUBLIC PART OF LIBRARY */
 
-t_socket new_t_socket() {
+t_socket new_t_socket_struct() {
     t_socket ret = (t_socket)calloc(1, sizeof(struct s_socket));
+    return ret;
+}
+
+t_socket new_t_socket() {
+    t_socket ret = new_t_socket_struct();
     increase_socket_counter();
     return ret;
 }
@@ -86,6 +91,21 @@ int socket_dll_load() {
 
 t_socket server_socket_init(enum SOCKET_TYPE type, char* address, int port) {
     return socket_init(type, address, port, SERVER);
+}
+
+t_socket client_socket_init_domain(enum SOCKET_TYPE type, char* domain, int port) {
+	socket_dll_load();
+	struct hostent *address= gethostbyname(domain);
+	t_socket ret = NULL;
+	if(address) {
+		char* server_ip = inet_ntoa(*(struct in_addr *)address->h_addr);
+		ret = client_socket_init(type, server_ip, port);
+	}
+	else {
+		printf("Error resolving hostname\n");
+        fprintf(stderr, "gethostbyname failed for %s: %d\n", domain, WSAGetLastError());
+	}
+    return ret;
 }
 
 t_socket client_socket_init(enum SOCKET_TYPE type, char* address, int port) {
@@ -155,6 +175,20 @@ int socket_serve(t_socket socket, int (*funct)(t_socket)) {
         }
     }
     return 0;
+}
+
+int udp_recv(t_socket sock, char* buffer, int maxlen, t_socket senderSocket) {
+    int cliAddrLen = sizeof(struct sockaddr_in);
+	struct sockaddr_in clientInfo;
+	int bytes_read =  recvfrom(get_socket_id(sock), buffer, maxlen, 0, (struct sockaddr*)&clientInfo, &cliAddrLen);
+	set_socket_settings(senderSocket, clientInfo);
+	return bytes_read;
+}
+
+int udp_send(t_socket sock, char* buffer, int len, t_socket toSocket) {
+	struct sockaddr_in clientInfo = get_socket_settings(toSocket);
+	int bytes_sent = sendto(get_socket_id(sock), buffer, len, 0, (struct sockaddr *)&clientInfo, sizeof(clientInfo));
+	return bytes_sent;
 }
 
 void socket_close(t_socket* socket) {

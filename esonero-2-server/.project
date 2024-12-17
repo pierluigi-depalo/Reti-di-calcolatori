@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>esonero-1-server</name>
+	<name>esonero-2-server</name>
 	<comment></comment>
 	<projects>
 		<project>socket_lib</project>
