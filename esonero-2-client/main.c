@@ -18,7 +18,6 @@ int communicate(t_socket socket) {
 		printf("%s", banner);
 	    if (fgets(buffer, sizeof(buffer), stdin) == NULL) break;
 	    sscanf(buffer, "%c %d", &choice, &len);
-	    printf("%s\n", buffer);
 
 		t_socket senderSocket = new_t_socket_struct();
 		if(udp_send(socket, buffer, strlen(buffer), socket) != strlen(buffer)) return SEND_ERROR;
