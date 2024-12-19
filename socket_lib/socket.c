@@ -103,7 +103,7 @@ t_socket client_socket_init_domain(enum SOCKET_TYPE type, char* domain, int port
 	}
 	else {
 		printf("Error resolving hostname\n");
-        fprintf(stderr, "gethostbyname failed for %s: %d\n", domain, WSAGetLastError());
+        fprintf(stderr, "gethostbyname failed for %s\n", domain);
 	}
     return ret;
 }
