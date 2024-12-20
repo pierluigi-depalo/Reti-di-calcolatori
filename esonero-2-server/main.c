@@ -87,9 +87,9 @@ int service(t_socket server) {
 	char choice, generated_pass[MAX_LENGTH+1];
 
 	printf("Listening...\n");
+	t_socket senderSocket = new_t_socket_struct();
 	while(1) {
 		int len;
-		t_socket senderSocket = new_t_socket_struct();
 		int bytes_read =  udp_recv(server, buffer, DATA_MAX_LEN, senderSocket);
 		printf("New request from from %s:%d\n", inet_ntoa(get_socket_settings(senderSocket).sin_addr), get_socket_settings(senderSocket).sin_port);
 
